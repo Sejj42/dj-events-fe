@@ -3,11 +3,18 @@ import Image from "next/image";
 import Link from "next/link";
 
 const EventItem = ({ evt }) => {
+  console.log("EventItem below");
+  console.log(evt);
+  // console.log(evt.image);
   return (
     <div className={styles.event}>
       <div className={styles.img}>
         <Image
-          src={evt.image ? evt.image : "/images/event-default.png"}
+          src={
+            evt.image
+              ? evt.image.data.attributes.formats.thumbnail.url
+              : "/images/event-default.png"
+          }
           alt=""
           width={170}
           height={100}

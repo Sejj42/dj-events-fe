@@ -6,6 +6,8 @@ import { FaPencilAlt, FaTimes } from "react-icons/fa";
 import Image from "next/image";
 
 const EventPage = ({ evt }) => {
+  console.log("EventPage");
+  console.log(evt);
   const deleteEvent = (e) => {
     console.log("delete");
   };
@@ -29,7 +31,16 @@ const EventPage = ({ evt }) => {
         <h1>{evt.name}</h1>
         {evt.image && (
           <div className={styles.image}>
-            <Image src={evt.image} width={960} height={600} alt="evt_img" />
+            <Image
+              src={
+                evt.image
+                  ? evt.image.data.attributes.formats.thumbnail.url
+                  : "/images/event-default.png"
+              }
+              width={960}
+              height={600}
+              alt="evt_img"
+            />
           </div>
         )}
         <h3>Performers:</h3>
@@ -61,31 +72,30 @@ export default EventPage;
 
 // export { getServerSideProps };
 
-const getStaticPaths = async () => {
-  const res = await fetch(`${API_URL}/api/events`);
-  const events = await res.json();
+// const getStaticPaths = async () => {
+//   const res = await fetch(`${API_URL}/api/events`);
+//   const events = await res.json();
 
-  const paths = events.map((evt) => ({
-    params: { slug: evt.slug },
-  }));
-  return {
-    paths,
-    fallback: true,
-  };
-};
+//   const paths = events.map((evt) => ({
+//     params: { slug: evt.slug },
+//   }));
+//   return {
+//     paths,
+//     fallback: true,
+//   };
+// };
 
-export { getStaticPaths };
+// export { getStaticPaths };
 
-const getStaticProps = async ({ params: { slug } }) => {
-  const res = await fetch(`${API_URL}/api/events/${slug}`);
+const getServerSideProps = async ({ query: { slug } }) => {
+  const res = await fetch(`${API_URL}/api/events?populate=image&?=${slug}`);
   const events = await res.json();
 
   return {
     props: {
-      evt: events[0],
+      evt: events.data[0].attributes,
     },
-    revalidate: 1,
   };
 };
 
-export { getStaticProps };
+export { getServerSideProps };
