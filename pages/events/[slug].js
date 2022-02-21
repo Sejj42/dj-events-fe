@@ -6,8 +6,6 @@ import { FaPencilAlt, FaTimes } from "react-icons/fa";
 import Image from "next/image";
 
 const EventPage = ({ evt }) => {
-  console.log("EventPage");
-  console.log(evt);
   const deleteEvent = (e) => {
     console.log("delete");
   };
@@ -26,14 +24,14 @@ const EventPage = ({ evt }) => {
           </a>
         </div>
         <span>
-          {evt.date} at {evt.time}
+          {new Date(evt.date).toLocaleDateString("en-GB")} at {evt.time}
         </span>
         <h1>{evt.name}</h1>
         {evt.image && (
           <div className={styles.image}>
             <Image
               src={
-                evt.image
+                evt.image.data
                   ? evt.image.data.attributes.formats.large.url
                   : "/images/event-default.png"
               }
