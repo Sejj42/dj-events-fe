@@ -81,7 +81,7 @@ const getServerSideProps = async ({ query: { slug } }) => {
   console.log("below is slug");
   console.log(slug);
   const res = await fetch(
-    `${API_URL}/api/events?filters[slug]=${slug}&[populate]=image&`
+    `${API_URL}/api/events?filters[slug]=${slug}&[populate]=image`
   );
   const events = await res.json();
 
