@@ -6,6 +6,8 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 
 export default function SearchPage({ events }) {
+  console.log("below is events");
+  console.log(events);
   const router = useRouter();
   return (
     <Layout title="Search Results">
@@ -21,17 +23,36 @@ export default function SearchPage({ events }) {
 }
 
 const getServerSideProps = async ({ query: { term } }) => {
-  const query = qs.stringify({
-    _where: {
-      _or: [
-        { name_contains: term },
-        { performers_contains: term },
-        { description_contains: term },
-        { venue_contains: term },
-      ],
+  const query = qs.stringify(
+    {
+      filters: {
+        $or: [
+          {
+            name: {
+              $containsi: term,
+            },
+          },
+          {
+            performers: {
+              $containsi: term,
+            },
+          },
+          {
+            description: {
+              $containsi: term,
+            },
+          },
+          {
+            venue: {
+              $containsi: term,
+            },
+          },
+        ],
+      },
     },
-  });
-  const res = await fetch(`${API_URL}/api/events?${query}&populate=image`);
+    { encode: false }
+  );
+  const res = await fetch(`${API_URL}/api/events?${query}&[populate]=image`);
   const events = await res.json();
 
   return {

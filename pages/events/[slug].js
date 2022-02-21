@@ -1,13 +1,31 @@
+import { FaPencilAlt, FaTimes } from "react-icons/fa";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
 import { API_URL } from "@/config/index";
 import Layout from "../../components/Layout";
 import styles from "@/styles/Event.module.css";
 import Link from "next/link";
-import { FaPencilAlt, FaTimes } from "react-icons/fa";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 const EventPage = ({ evt }) => {
-  const deleteEvent = (e) => {
-    console.log("delete");
+  console.log("evt is in EventPage");
+  console.log(evt);
+  const router = useRouter();
+
+  const deleteEvent = async (e) => {
+    if (confirm("Are you sure?")) {
+      const res = await fetch(`${API_URL}/api/events/${evt.id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message);
+      } else {
+        router.push("/events");
+      }
+    }
   };
 
   return (
@@ -24,15 +42,17 @@ const EventPage = ({ evt }) => {
           </a>
         </div>
         <span>
-          {new Date(evt.date).toLocaleDateString("en-GB")} at {evt.time}
+          {new Date(evt.attributes.date).toLocaleDateString("en-GB")} at{" "}
+          {evt.attributes.time}
         </span>
-        <h1>{evt.name}</h1>
-        {evt.image && (
+        <h1>{evt.attributes.name}</h1>
+        <ToastContainer />
+        {evt.attributes.image && (
           <div className={styles.image}>
             <Image
               src={
-                evt.image.data
-                  ? evt.image.data.attributes.formats.large.url
+                evt.attributes.image.data
+                  ? evt.attributes.image.data.attributes.formats.large.url
                   : "/images/event-default.png"
               }
               width={960}
@@ -42,11 +62,11 @@ const EventPage = ({ evt }) => {
           </div>
         )}
         <h3>Performers:</h3>
-        <p>{evt.performers}</p>
+        <p>{evt.attributes.performers}</p>
         <h3>Description:</h3>
-        <p>{evt.description}</p>
-        <h3>Venue: {evt.venue}</h3>
-        <p>{evt.address}</p>
+        <p>{evt.attributes.description}</p>
+        <h3>Venue: {evt.attributes.venue}</h3>
+        <p>{evt.attributes.address}</p>
 
         <Link href="/events">
           <a className={styles.back}>&larr; Go Back</a>
@@ -57,41 +77,17 @@ const EventPage = ({ evt }) => {
 };
 export default EventPage;
 
-// const getServerSideProps = async ({ query: { slug } }) => {
-//   const res = await fetch(`${API_URL}/api/events/${slug}`);
-//   const events = await res.json();
-
-//   return {
-//     props: {
-//       evt: events[0],
-//     },
-//   };
-// };
-
-// export { getServerSideProps };
-
-// const getStaticPaths = async () => {
-//   const res = await fetch(`${API_URL}/api/events`);
-//   const events = await res.json();
-
-//   const paths = events.map((evt) => ({
-//     params: { slug: evt.slug },
-//   }));
-//   return {
-//     paths,
-//     fallback: true,
-//   };
-// };
-
-// export { getStaticPaths };
-
 const getServerSideProps = async ({ query: { slug } }) => {
-  const res = await fetch(`${API_URL}/api/events?populate=image&?=${slug}`);
+  console.log("below is slug");
+  console.log(slug);
+  const res = await fetch(
+    `${API_URL}/api/events?filters[slug]=${slug}&[populate]=image&`
+  );
   const events = await res.json();
 
   return {
     props: {
-      evt: events.data[0].attributes,
+      evt: events.data[0],
     },
   };
 };

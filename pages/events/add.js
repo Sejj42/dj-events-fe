@@ -41,8 +41,6 @@ const AddEventPage = () => {
       toast.error("Something went wrong.");
     } else {
       const evt = await res.json();
-      console.log("hi");
-      console.log(evt);
       // router.push(`/events/${evt.attributes.slug}`);
     }
   };
