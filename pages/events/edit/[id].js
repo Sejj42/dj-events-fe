@@ -10,6 +10,7 @@ import Link from "next/link";
 import { API_URL } from "@/config/index";
 import Image from "next/image";
 import Modal from "@/components/Modal";
+import ImageUpload from "@/components/ImageUpload";
 
 const EditEventPage = ({ evt }) => {
   console.log(evt);
@@ -24,7 +25,7 @@ const EditEventPage = ({ evt }) => {
     description: evt.attributes.description,
   });
   const [imgPreview, setImgPreview] = useState(
-    evt.attributes.image
+    evt.attributes.image.data
       ? evt.attributes.image.data.attributes.formats.thumbnail.url
       : null
   );
@@ -62,6 +63,19 @@ const EditEventPage = ({ evt }) => {
     e.preventDefault();
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
+  };
+
+  const imageUploaded = async (e) => {
+    const res = await fetch(`${API_URL}/api/events/${evt.id}?popoulate=image`);
+    const data = await res.json();
+    console.log("below is imageuploaded res data");
+    console.log(data);
+    setImgPreview(data.attribtues.image.formats.thumbnail.url);
+    setShowModal(false);
+
+    setImgPreview(data.image.formats.thumbnail.url);
+
+    // evt.attributes.image.data.attributes.formats.thumbnail.url
   };
 
   return (
@@ -165,7 +179,7 @@ const EditEventPage = ({ evt }) => {
         </button>
       </div>
       <Modal show={showModal} onClose={() => setShowModal(false)}>
-        IMAGE UPLOAD
+        <ImageUpload evtId={evt.id} imageUploaded={imageUploaded} />
       </Modal>
     </Layout>
   );
@@ -174,7 +188,7 @@ const EditEventPage = ({ evt }) => {
 export default EditEventPage;
 
 const getServerSideProps = async ({ params: { id } }) => {
-  const res = await fetch(`${API_URL}/api/events/${id}?[populate]=image`);
+  const res = await fetch(`${API_URL}/api/events/${id}?populate=image`);
   const evt = await res.json();
 
   return {
