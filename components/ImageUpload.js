@@ -1,22 +1,25 @@
 import styles from "@/styles/Form.module.css";
 import { useState } from "react";
-import { API_URL } from "../config/index";
+import { API_URL } from "@/config/index";
+
 const ImageUpload = ({ evtId, imageUploaded }) => {
   const [image, setImage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
+    let formData = new FormData();
+
     formData.append("files", image);
-    formData.append("ref", "events");
+    formData.append("ref", "event");
     formData.append("refId", evtId);
     formData.append("field", "image");
 
-    const res = await fetch(`${API_URL}/upload`, {
+    const res = await fetch(`${API_URL}/api/upload`, {
       method: "POST",
       body: formData,
     });
-
+    console.log("below is res");
+    console.log(res);
     if (res.ok) {
       imageUploaded();
     }

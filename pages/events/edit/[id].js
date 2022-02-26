@@ -66,14 +66,14 @@ const EditEventPage = ({ evt }) => {
   };
 
   const imageUploaded = async (e) => {
-    const res = await fetch(`${API_URL}/api/events/${evt.id}?popoulate=image`);
+    const res = await fetch(`${API_URL}/api/events/${evt.id}?populate=image`);
     const data = await res.json();
     console.log("below is imageuploaded res data");
     console.log(data);
-    setImgPreview(data.attribtues.image.formats.thumbnail.url);
+    setImgPreview(data.attribtues.image.data.formats.thumbnail.url);
     setShowModal(false);
 
-    setImgPreview(data.image.formats.thumbnail.url);
+    // setImgPreview(data.image.formats.thumbnail.url);
 
     // evt.attributes.image.data.attributes.formats.thumbnail.url
   };
